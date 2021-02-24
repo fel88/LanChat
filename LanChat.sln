@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanChat", "LanChat\LanChat.csproj", "{68667DCA-E478-4D5B-A059-90886124F513}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68667DCA-E478-4D5B-A059-90886124F513}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68667DCA-E478-4D5B-A059-90886124F513}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68667DCA-E478-4D5B-A059-90886124F513}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68667DCA-E478-4D5B-A059-90886124F513}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7DCE1AE0-F4AE-41B5-BF25-335363EC1147}
+	EndGlobalSection
+EndGlobal
