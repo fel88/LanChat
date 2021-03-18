@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace LanChat
@@ -14,8 +16,21 @@ namespace LanChat
         {
             InitializeComponent();
             textBox3.Text = Environment.MachineName + "/" + Environment.UserName;
+            label11.Text = $"My IP: {GetLocalIPAddress()}";
         }
 
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
         ChatClient client = new ChatClient();
 
         public Dictionary<string, Bitmap> loaded = new Dictionary<string, Bitmap>();
@@ -40,11 +55,25 @@ namespace LanChat
             });
         }
 
+        void UpdateLed(Label label, string text, bool status)
+        {
+            label.Text = text;
+            if (status)
+            {
+                label.BackColor = Color.Green;
+                label.ForeColor = Color.White;
+            }
+            else
+            {
+                label.BackColor = Color.Yellow;
+                label.ForeColor = Color.Gray;
+            }
+        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            label1.Text = "connected: " + client.Connected;
-            label2.Text = "server state: " + (server != null);
+            UpdateLed(label1, "connected", client.Connected);
+            UpdateLed(label2, "server state", server != null);
 
             label3.Text = "clients: " + ((server != null) ? (server.streams.Count + "") : "null");
         }
@@ -55,12 +84,14 @@ namespace LanChat
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (client == null || !client.Connected) return;
             client.SendMsg(richTextBox1.Text);
         }
 
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (client == null || !client.Connected) return;
             client.FetchClients();
         }
 
@@ -131,7 +162,7 @@ namespace LanChat
             {
                 GetFilesRec(dd, list);
             }
-        }     
+        }
 
         private void button11_Click(object sender, EventArgs e)
         {
@@ -219,7 +250,8 @@ namespace LanChat
                 }));
 
             };
-            client.Connect(textBox2.Text, int.Parse(textBox1.Text));
+            client.Connect(textBox2.Text, int.Parse(textBox1.Text));            
+            client.FetchClients();
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -241,6 +273,6 @@ namespace LanChat
 
             }
         }
-       
+
     }
 }
