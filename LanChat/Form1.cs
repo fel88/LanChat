@@ -16,8 +16,24 @@ namespace LanChat
         {
             InitializeComponent();
             textBox3.Text = Environment.MachineName + "/" + Environment.UserName;
-            label11.Text = $"My IP: {GetLocalIPAddress()}";
+            //label11.Text = $"My IP: {GetLocalIPAddress()}";
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+
+            List<string> ips = new List<string>();
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    ips.Add(ip.ToString());
+                }
+            }
+            foreach (var item in ips.OrderByDescending(z => z.StartsWith("192") ? 1 : 0))
+            {
+                comboBox1.Items.Add(item);
+            }
+            if (comboBox1.Items.Count == 0) { comboBox1.Visible = false; } else { comboBox1.SelectedIndex = 0; }
         }
+
 
         public static string GetLocalIPAddress()
         {
@@ -250,7 +266,7 @@ namespace LanChat
                 }));
 
             };
-            client.Connect(textBox2.Text, int.Parse(textBox1.Text));            
+            client.Connect(textBox2.Text, int.Parse(textBox1.Text));
             client.FetchClients();
         }
 
