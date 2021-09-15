@@ -6,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace LanChat
 {
@@ -15,6 +17,7 @@ namespace LanChat
         public Form1()
         {
             InitializeComponent();
+            loadSettings();
             textBox3.Text = Environment.MachineName + "/" + Environment.UserName;
             //label11.Text = $"My IP: {GetLocalIPAddress()}";
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -34,6 +37,41 @@ namespace LanChat
             if (comboBox1.Items.Count == 0) { comboBox1.Visible = false; } else { comboBox1.SelectedIndex = 0; }
         }
 
+        void loadSettings()
+        {
+            if (!File.Exists("settings.xml")) return;
+            XDocument doc = XDocument.Load("settings.xml");
+            foreach (var item in doc.Descendants("connect"))
+            {
+                try
+                {
+                    var prs = IPAddress.Parse(item.Attribute("addr").Value);
+                    var port = int.Parse(item.Attribute("port").Value);
+                    addNewConnectTarget(prs, port);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+        }
+        void addNewConnectTarget(IPAddress addr, int port)
+        {
+            if (connectTargets.Any(z => z.Addr.ToString() == addr.ToString() && z.Port == port)) return;
+            var tt = new ConnectSocketInfo() { Addr = addr, Port = port };
+            connectTargets.Add(tt);
+            var but = new ToolStripMenuItem(addr.ToString() + ":" + port) { Tag = tt };
+            toolStripSplitButton1.DropDownItems.Add(but);
+            but.Click += But_Click;
+        }
+
+        private void But_Click(object sender, EventArgs e)
+        {
+            var csi = ((sender as ToolStripMenuItem).Tag as ConnectSocketInfo);
+            textBox2.Text = csi.Addr.ToString();
+            textBox1.Text = csi.Port.ToString();
+            connect(textBox2.Text, int.Parse(textBox1.Text));
+        }
 
         public static string GetLocalIPAddress()
         {
@@ -206,14 +244,21 @@ namespace LanChat
         {
             if (!isStarted)
             {
+                var port = int.Parse(textBox1.Text);
                 server = new ChatServer();
-                server.Init(int.Parse(textBox1.Text));
+                server.Init(port);
                 isStarted = true;
+                if (MessageBox.Show("Connect as client to (localhost)?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    connect("127.0.0.1", port);
+                }
+                toolStripButton1.Enabled = false;
             }
         }
 
-        private void toolStripButton2_Click(object sender, EventArgs e)
+        void connect(string ipAddr, int port)
         {
+            client = new ChatClient();
             client.OnClientsListUpdate = UpdateClientsList;
             client.OnError = (msg) =>
             {
@@ -231,11 +276,11 @@ namespace LanChat
             {
                                     DateTime.Now.ToLongTimeString(),
                                     uin,
-                                   size/1024 + "Kb",
+                                   (long)Math.Round(size/1024f) + "Kb",
                                     "file recieved: " + path + "(size: " + size/1024 + "Kb)" +
                                     Environment.NewLine,
             })
-                { Tag = path });
+                { Tag = new FileInfo(path) });
             };
             client.OnFileChunkRecieved = (uin, path, chunkSize, size, perc) =>
             {
@@ -266,8 +311,15 @@ namespace LanChat
                 }));
 
             };
-            client.Connect(textBox2.Text, int.Parse(textBox1.Text));
+            client.Connect(ipAddr, port);
+            toolStripSplitButton1.Enabled = false;
             client.FetchClients();
+        }
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            var ip = textBox2.Text;
+            var port = int.Parse(textBox1.Text);
+            connect(ip, port);
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -290,5 +342,48 @@ namespace LanChat
             }
         }
 
+        private void openLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var tag = listView1.SelectedItems[0].Tag;
+            if (tag is FileInfo fi)
+            {
+                Process.Start(fi.Directory.FullName);
+            }
+        }
+
+        void updateSettings()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"?>");
+            sb.AppendLine("<root>");
+            sb.AppendLine("<connects>");
+            foreach (var item in connectTargets)
+            {
+                sb.AppendLine($"<connect addr=\"{item.Addr}\" port=\"{item.Port}\"/>");
+            }
+            sb.AppendLine("</connects>");
+            sb.AppendLine("</root>");
+            File.WriteAllText("settings.xml", sb.ToString());
+        }
+        public class ConnectSocketInfo
+        {
+            public IPAddress Addr;
+            public int Port;
+        }
+        List<ConnectSocketInfo> connectTargets = new List<ConnectSocketInfo>();
+        private void toolStripSplitButton1_ButtonClick(object sender, EventArgs e)
+        {
+            var ip = textBox2.Text;
+            var port = int.Parse(textBox1.Text);
+            connect(ip, port);
+            addNewConnectTarget(IPAddress.Parse(textBox2.Text), int.Parse(textBox1.Text));
+            updateSettings();
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

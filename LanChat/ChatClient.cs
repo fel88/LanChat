@@ -186,8 +186,9 @@ namespace LanChat
                                 var data = Convert.FromBase64String(chunk.Value);
 
                                 var perc = ((offset + szval) / (decimal)size) * 100m;
+                                string pp = $"Saved/{DateTime.Now.ToLongDateString()}/";
 
-                                var path = Path.Combine("Saved/", nm);
+                                var path = Path.Combine(pp, nm);
 
                                 var pathes =
                                     nm.Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries)
@@ -195,10 +196,10 @@ namespace LanChat
                                         .Skip(1)
                                         .Reverse()
                                         .ToArray();
-                                string pp = "Saved/";
-                                if (!Directory.Exists("Saved/"))
+                                
+                                if (!Directory.Exists(pp))
                                 {
-                                    Directory.CreateDirectory("Saved/");
+                                    Directory.CreateDirectory(pp);
                                 }
                                 foreach (var ff in pathes)
                                 {
@@ -207,7 +208,6 @@ namespace LanChat
                                     if (!Directory.Exists(pp))
                                     {
                                         Directory.CreateDirectory(pp);
-
                                     }
                                 }
 
