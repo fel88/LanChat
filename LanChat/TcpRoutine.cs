@@ -48,8 +48,14 @@ namespace LanChat
                 }
             }
         }
+     
 
         public List<ConnectionInfo> streams = new List<ConnectionInfo>();
+
+        public virtual void NewClient()
+        {
+
+        }
         public void InitTcp(IPAddress ip, int port, Action<NetworkStream, object> threadProcessor, Func<object> factory = null)
         {
             server1 = new TcpListener(ip, port);
@@ -68,11 +74,12 @@ namespace LanChat
                         var addr = (client.Client.RemoteEndPoint as IPEndPoint).Address;
                         var _port = (client.Client.RemoteEndPoint as IPEndPoint).Port;
                         var obj = factory != null ? factory() : null;
+                        var cinf = new ConnectionInfo() { Stream = stream, Client = client, Ip = addr, Port = _port, Tag = obj };
 
-                        streams.Add(new ConnectionInfo() { Stream = stream, Client = client, Ip = addr, Port = _port, Tag = obj });
-                        Thread thp = new Thread(() => { threadProcessor(stream, obj); });
+                        streams.Add(cinf);
+                        Thread thp = new Thread(() => { threadProcessor(stream, cinf); });
                         thp.IsBackground = true;
-                        thp.Start();
+                        thp.Start();                        
                     }
 
                 }

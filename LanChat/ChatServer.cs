@@ -15,9 +15,14 @@ namespace LanChat
             InitTcp(IPAddress.Any, port, ThreadProcessor, () => new UserInfo());
 
         }
+        public override void NewClient()
+        {
+            sendAllClientUpdates();
+        }
         public void ThreadProcessor(NetworkStream stream, object obj)
         {
-            var uinfo = obj as UserInfo;
+            var cinf = obj as ConnectionInfo;
+            var uinfo = cinf.Tag as UserInfo;
             StreamReader reader = new StreamReader(stream);
             StreamWriter wrt2 = new StreamWriter(stream);
 
@@ -32,9 +37,10 @@ namespace LanChat
                         var ind = line.IndexOf("=");
                         var msg = line.Substring(ind + 1);
                         uinfo.Name = msg;
+                        NewClient();
 
                     }
-                    if (line.StartsWith("MSG"))
+                    else if (line.StartsWith("MSG"))
                     {
 
                         var ind = line.IndexOf("=");
@@ -61,32 +67,11 @@ namespace LanChat
 
                         this.SendAll("MSG=" + ree);
                     }
-                    if (line.StartsWith("CLIENTS"))
+                    else if (line.StartsWith("CLIENTS"))
                     {
-
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendLine("<?xml version=\"1.0\"?>");
-                        sb.AppendLine("<root>");
-                        foreach (var connectionInfo in this.streams)
-                        {
-                            var uin = connectionInfo.Tag as UserInfo;
-                            sb.AppendLine(string.Format("<client name=\"{0}\" />", uin.Name));
-                        }
-                        sb.AppendLine("</root>");
-
-                        //format? user:\ntext
-                        var estr = sb.ToString();
-
-                        var bt = Encoding.UTF8.GetBytes(estr);
-
-                        var ree = Convert.ToBase64String(bt);
-
-
-                        wrt2.WriteLine("CLIENTS=" + ree);
-                        wrt2.Flush();
+                        sendClientsList(wrt2);
                     }
-
-                    if (line.StartsWith("ACK"))//file download ack
+                    else if (line.StartsWith("ACK"))//file download ack
                     {
                         //1.parse xml
                         var ln = line.Substring("ACK".Length + 1);
@@ -106,8 +91,7 @@ namespace LanChat
 
                         //server.SendAll(line);
                     }
-
-                    if (line.StartsWith("FILE"))
+                    else if (line.StartsWith("FILE"))
                     {
                         //1.parse xml
                         var ln = line.Substring("FILE".Length + 1);
@@ -129,17 +113,52 @@ namespace LanChat
 
 
                 }
-
+                catch (IOException iex)
+                {
+                    lock (streams)
+                        streams.Remove(cinf);
+                    sendAllClientUpdates();
+                    break;
+                }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                     break;
-
                     //TcpRoutine.ErrorSend(stream);
-                }
+                }                
             }
-
         }
 
+        void sendAllClientUpdates()
+        {
+            var estr = getClientsXml();
+            var bt = Encoding.UTF8.GetBytes(estr);
+            var ree = Convert.ToBase64String(bt);
+            var ss = "CLIENTS=" + ree;
+
+            SendAll(ss);
+        }
+
+        public string getClientsXml()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"?>");
+            sb.AppendLine("<root>");
+            foreach (var connectionInfo in this.streams)
+            {
+                var uin = connectionInfo.Tag as UserInfo;
+                sb.AppendLine(string.Format("<client name=\"{0}\" />", uin.Name));
+            }
+            sb.AppendLine("</root>");
+            return sb.ToString();
+        }
+        private void sendClientsList(StreamWriter wrt2)
+        {
+            var estr = getClientsXml();
+            var bt = Encoding.UTF8.GetBytes(estr);
+            var ree = Convert.ToBase64String(bt);
+            wrt2.WriteLine("CLIENTS=" + ree);
+            wrt2.Flush();
+        }
     }
 }

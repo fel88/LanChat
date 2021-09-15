@@ -259,6 +259,7 @@ namespace LanChat
         void connect(string ipAddr, int port)
         {
             client = new ChatClient();
+            client.Nickname = textBox3.Text;
             client.OnClientsListUpdate = UpdateClientsList;
             client.OnError = (msg) =>
             {
