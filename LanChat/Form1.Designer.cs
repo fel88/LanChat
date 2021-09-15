@@ -54,6 +54,8 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.openLocationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -82,8 +84,6 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.openLocationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSplitButton1 = new System.Windows.Forms.ToolStripSplitButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -91,13 +91,13 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.toolStrip1.SuspendLayout();
-            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -322,10 +322,10 @@
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(2, 2);
-            this.listView1.Margin = new System.Windows.Forms.Padding(2);
+            this.listView1.Location = new System.Drawing.Point(0, 0);
+            this.listView1.Margin = new System.Windows.Forms.Padding(0);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(455, 326);
+            this.listView1.Size = new System.Drawing.Size(459, 330);
             this.listView1.TabIndex = 2;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -347,6 +347,20 @@
             // 
             this.columnHeader3.Text = "Text";
             this.columnHeader3.Width = 250;
+            // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openLocationToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(148, 26);
+            // 
+            // openLocationToolStripMenuItem
+            // 
+            this.openLocationToolStripMenuItem.Name = "openLocationToolStripMenuItem";
+            this.openLocationToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.openLocationToolStripMenuItem.Text = "open location";
+            this.openLocationToolStripMenuItem.Click += new System.EventHandler(this.openLocationToolStripMenuItem_Click);
             // 
             // panel2
             // 
@@ -384,6 +398,7 @@
             // 
             // richTextBox1
             // 
+            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Margin = new System.Windows.Forms.Padding(0);
@@ -411,7 +426,7 @@
             this.tabPage3.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(590, 480);
+            this.tabPage3.Size = new System.Drawing.Size(694, 394);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "File transfer";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -428,7 +443,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(586, 476);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(690, 390);
             this.tableLayoutPanel3.TabIndex = 15;
             // 
             // listView4
@@ -445,7 +460,7 @@
             this.listView4.Location = new System.Drawing.Point(2, 102);
             this.listView4.Margin = new System.Windows.Forms.Padding(2);
             this.listView4.Name = "listView4";
-            this.listView4.Size = new System.Drawing.Size(582, 372);
+            this.listView4.Size = new System.Drawing.Size(686, 286);
             this.listView4.TabIndex = 14;
             this.listView4.UseCompatibleStateImageBehavior = false;
             this.listView4.View = System.Windows.Forms.View.Details;
@@ -487,7 +502,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(3, 3);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(580, 94);
+            this.panel4.Size = new System.Drawing.Size(684, 94);
             this.panel4.TabIndex = 15;
             // 
             // button7
@@ -636,20 +651,6 @@
             this.toolStripButton1.Text = "start server";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
-            // contextMenuStrip2
-            // 
-            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openLocationToolStripMenuItem});
-            this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(148, 26);
-            // 
-            // openLocationToolStripMenuItem
-            // 
-            this.openLocationToolStripMenuItem.Name = "openLocationToolStripMenuItem";
-            this.openLocationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openLocationToolStripMenuItem.Text = "open location";
-            this.openLocationToolStripMenuItem.Click += new System.EventHandler(this.openLocationToolStripMenuItem_Click);
-            // 
             // toolStripSplitButton1
             // 
             this.toolStripSplitButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -678,6 +679,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.contextMenuStrip2.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
@@ -686,7 +688,6 @@
             this.panel4.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -331,8 +331,11 @@ namespace LanChat
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView1.FirstSelected() == null) return;
-
-            if (listView1.FirstSelected().Tag is string str1)
+            if (listView1.FirstSelected().Tag is FileInfo fin)
+            {
+                richTextBox2.Text = fin.ToString();
+            }
+            else if (listView1.FirstSelected().Tag is string str1)
             {
                 richTextBox2.Text = str1;
             }
